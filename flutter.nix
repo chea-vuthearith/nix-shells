@@ -45,6 +45,7 @@ in
   pkgs.mkShell rec {
     buildInputs = [
       pkgs.flutter335
+      pkgs.jdk21
       androidSdk
       startEmulator
     ];
@@ -52,6 +53,8 @@ in
     ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
     ANDROID_SDK_ROOT = ANDROID_HOME;
     ANDROID_NDK_ROOT = "${ANDROID_HOME}/ndk-bundle";
+
+    JAVA_HOME = pkgs.jdk21;
 
     GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_HOME}/build-tools/${buildToolsVersion}/aapt2";
 
