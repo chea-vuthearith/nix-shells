@@ -39,7 +39,7 @@
 
   androidSdk = androidComposition.androidsdk;
   startEmulator = pkgs.writeShellScriptBin "start-emulator" ''
-    emulator -avd "${deviceName}" -gpu host
+    emulator -avd "${deviceName}" -gpu host -no-snapshot
   '';
 in
   pkgs.mkShell rec {
