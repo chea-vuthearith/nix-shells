@@ -39,15 +39,21 @@
 
   androidSdk = androidComposition.androidsdk;
   startEmulator = pkgs.writeShellScriptBin "start-emulator" ''
-    emulator -avd "${deviceName}"
+    emulator -avd "${deviceName}" -gpu host
   '';
 in
   pkgs.mkShell rec {
     buildInputs = [
-      pkgs.flutter335
-      pkgs.jdk21
       androidSdk
       startEmulator
+      pkgs.flutter335
+      pkgs.jdk21
+      pkgs.libGL
+      pkgs.mesa
+      pkgs.libX11
+      pkgs.vulkan-loader
+      pkgs.vulkan-tools
+      pkgs.vulkan-validation-layers
     ];
 
     ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
@@ -57,9 +63,11 @@ in
     JAVA_HOME = pkgs.jdk21;
 
     GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_HOME}/build-tools/${buildToolsVersion}/aapt2";
+    QT_QPA_PLATFORM = "xcb";
 
     shellHook = ''
       export ANDROID_AVD_HOME="$HOME/.config/.android/avd";
+      export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
       echo "Flutter + Android SDK (API 36) ready"
       # Create AVD if missing
       if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
