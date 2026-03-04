@@ -46,7 +46,7 @@ in
     buildInputs = [
       androidSdk
       startEmulator
-      pkgs.flutter335
+      pkgs.flutter
       pkgs.jdk21
       pkgs.libGL
       pkgs.mesa
