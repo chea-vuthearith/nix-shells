@@ -20,7 +20,7 @@
     includeEmulator = true;
     includeCmake = true;
     cmakeVersions = ["3.22.1"];
-    ndkVersions = ["27.0.12077973"];
+    ndkVersions = ["28.2.13676358"];
     buildToolsVersions = [buildToolsVersion];
     includeNDK = true;
     extraLicenses = [
@@ -46,7 +46,7 @@ in
     buildInputs = [
       androidSdk
       startEmulator
-      pkgs.flutter
+      pkgs.flutter341
       pkgs.jdk21
       pkgs.libGL
       pkgs.mesa
@@ -68,7 +68,6 @@ in
     shellHook = ''
       export ANDROID_AVD_HOME="$HOME/.config/.android/avd";
       export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
-      echo "Flutter + Android SDK (API 36) ready"
       # Create AVD if missing
       if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
         echo "Creating AVD '${deviceName}'"
@@ -76,8 +75,6 @@ in
           -n "${deviceName}" \
           -k "${systemImage}" \
           --force
-      else
-        echo "AVD '${deviceName}' already exists"
       fi
     '';
   }
