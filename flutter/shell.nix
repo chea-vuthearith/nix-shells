@@ -11,8 +11,8 @@
   systemImage = "system-images;android-${version};${imageType};${abi}";
 
   advConfigOptions = {
-    hw.gpu.enabled = "yes";
-    hw.gpu.mode = "host";
+    "hw.gpu.enabled" = "yes";
+    "hw.gpu.mode" = "host";
   };
 
   androidComposition = pkgs.androidenv.composeAndroidPackages {
