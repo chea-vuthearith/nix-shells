@@ -69,22 +69,25 @@ in
     GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_HOME}/build-tools/${buildToolsVersion}/aapt2";
     QT_QPA_PLATFORM = "xcb";
 
-    shellHook = ''
-      export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
-      if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
-        echo "Creating AVD '${deviceName}'"
-        echo "no" | avdmanager create avd \
-          -n "${deviceName}" \
-          -k "${systemImage}" \
-          --force
-      fi
+    shellHook =
+      let
+        configLines = lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (configKey: configValue: ''
+            echo "${configKey} = ${configValue}" >> "$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
+          '') advConfigOptions
+        );
+      in
+      ''
+        export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
+        if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
+          echo "Creating AVD '${deviceName}'"
+          echo "no" | avdmanager create avd \
+            -n "${deviceName}" \
+            -k "${systemImage}" \
+            --force
+        fi
 
-      CONFIG_INI="$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
-      ${builtins.concatStringsSep "\n" (
-        lib.mapAttrsToList (configKey: configValue: ''
-          echo "${configKey} = ${configValue}" >> $ANDROID_AVD_HOME/${deviceName}.avd/config.ini
-        '')
-        advConfigOptions
-      )}
-    '';
+        CONFIG_INI="$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
+        ${configLines}
+      '';
   }
