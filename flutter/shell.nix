@@ -72,7 +72,7 @@ in
     shellHook = let
       configLines = lib.concatStringsSep "\n" (
         lib.mapAttrsToList (configKey: configValue: ''
-          echo "${configKey} = ${configValue}" >> "$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
+          echo "${configKey} = ${configValue}" >> "${ANDROID_AVD_HOME}/${deviceName}.avd/config.ini"
         '')
         advConfigOptions
       );
