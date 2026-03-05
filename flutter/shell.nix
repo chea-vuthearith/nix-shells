@@ -8,12 +8,10 @@
   abi = "x86_64";
   imageType = "google_apis";
   systemImage = "system-images;android-${version};${imageType};${abi}";
-
   advConfigOptions = {
     "hw.gpu.enabled" = "yes";
     "hw.gpu.mode" = "host";
   };
-
   androidComposition = pkgs.androidenv.composeAndroidPackages {
     platformVersions = [version];
     abiVersions = [abi];
@@ -81,7 +79,8 @@ in
         CONFIG_INI="$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
         ${builtins.concatStringsSep "\n" (
         lib.mapAttrsToList (configKey: configValue: ''
-          echo "${configKey} = ${configValue}" >> $ANDROID_AVD_HOME/${deviceName}.avd/config.ini
+          sed -i "/^${configKey}[[:space:]]*=/d" "$CONFIG_INI"
+          echo "${configKey} = ${configValue}" >> "$CONFIG_INI"
         '')
         advConfigOptions
       )}
