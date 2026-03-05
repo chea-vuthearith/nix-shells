@@ -1,11 +1,19 @@
-{ pkgs }:
-let
+{
+  pkgs,
+  lib,
+}: let
+  home = builtins.getEnv "HOME";
   deviceName = "Default";
   version = "36";
   buildToolsVersion = "35.0.0";
   abi = "x86_64";
   imageType = "google_apis";
   systemImage = "system-images;android-${version};${imageType};${abi}";
+
+  advConfigOptions = {
+    hw.gpu.enabled = "yes";
+    hw.gpu.mode = "host";
+  };
 
   androidComposition = pkgs.androidenv.composeAndroidPackages {
     platformVersions = [version];
@@ -54,6 +62,7 @@ in
     ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
     ANDROID_SDK_ROOT = ANDROID_HOME;
     ANDROID_NDK_ROOT = "${ANDROID_HOME}/ndk-bundle";
+    ANDROID_AVD_HOME = "${home}/.config/.android/avd";
 
     JAVA_HOME = pkgs.jdk21;
 
@@ -61,7 +70,6 @@ in
     QT_QPA_PLATFORM = "xcb";
 
     shellHook = ''
-      export ANDROID_AVD_HOME="$HOME/.config/.android/avd";
       export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
       if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
         echo "Creating AVD '${deviceName}'"
@@ -70,5 +78,13 @@ in
           -k "${systemImage}" \
           --force
       fi
+
+      CONFIG_INI="$ANDROID_AVD_HOME/${deviceName}.avd/config.ini"
+      ${builtins.concatStringsSep "\n" (
+        lib.mapAttrsToList (configKey: configValue: ''
+          echo "${configKey} = ${configValue}" >> $ANDROID_AVD_HOME/${deviceName}.avd/config.ini
+        '')
+        advConfigOptions
+      )}
     '';
   }
