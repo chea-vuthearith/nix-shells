@@ -1,10 +1,5 @@
-{
-  pkgs ?
-    import <nixpkgs> {
-      config.android_sdk.accept_license = true;
-      config.allowUnfree = true;
-    },
-}: let
+{ pkgs }:
+let
   deviceName = "Default";
   version = "36";
   buildToolsVersion = "35.0.0";
@@ -68,7 +63,6 @@ in
     shellHook = ''
       export ANDROID_AVD_HOME="$HOME/.config/.android/avd";
       export LD_LIBRARY_PATH="$NIX_LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
-      # Create AVD if missing
       if ! avdmanager list avd | grep -q "Name: ${deviceName}"; then
         echo "Creating AVD '${deviceName}'"
         echo "no" | avdmanager create avd \

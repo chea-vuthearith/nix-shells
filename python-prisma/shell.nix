@@ -1,23 +1,17 @@
-{pkgs ? import <nixpkgs> {}}: let
-  # Prisma engine version 5.17.0 (used by prisma-client-py 0.15.0)
+{ pkgs }:
+let
   version = "5.17.0";
   engineHash = "393aa359c9ad4a4bb28630fb5613f9c281cde053";
 
-  # Detect platform
-  system = pkgs.stdenv.system;
-
-  # Map Nix systems to Prisma platform identifiers
   prismaSystem =
     {
       "x86_64-linux" = "debian-openssl-3.0.x";
       "aarch64-linux" = "linux-arm64-openssl-3.0.x";
       "x86_64-darwin" = "darwin";
       "aarch64-darwin" = "darwin-arm64";
-    }.${
-      system
-    } or (throw "Unsupported system: ${system}");
+    }.${pkgs.stdenv.system}
+    or (throw "Unsupported system: ${pkgs.stdenv.system}");
 
-  # Use requireFile to reference the pre-downloaded binaries
   query-engine-file = pkgs.fetchurl {
     url = "https://binaries.prisma.sh/all_commits/${engineHash}/${prismaSystem}/query-engine.gz";
     sha256 = "0z861vvz70g63m0256n2h7llpn93c83p2qpff72n0mqdpvg5gj4v";
@@ -38,7 +32,6 @@
     sha256 = "0gvrx1gywnrab1jhyvff4xbhgngs3nkl8ivz2sp5dr3z3vdj7gz6";
   };
 
-  # Create derivation to install the engines
   prisma-engines-5 = pkgs.stdenv.mkDerivation {
     pname = "prisma-engines";
     inherit version;
@@ -48,20 +41,12 @@
     installPhase = ''
       mkdir -p $out/bin
       mkdir -p $out/lib
-
-      # Install and decompress query engine
       gzip -d < ${query-engine-file} > $out/bin/query-engine
       chmod +x $out/bin/query-engine
-
-      # Install and decompress schema engine
       gzip -d < ${schema-engine-file} > $out/bin/schema-engine
       chmod +x $out/bin/schema-engine
-
-      # Install and decompress libquery_engine
       gzip -d < ${libquery-engine-file} > $out/lib/libquery_engine.node
       chmod +x $out/lib/libquery_engine.node
-
-      # Install and decompress prisma-fmt
       gzip -d < ${prisma-fmt-file} > $out/bin/prisma-fmt
       chmod +x $out/bin/prisma-fmt
     '';
