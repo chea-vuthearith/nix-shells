@@ -23,9 +23,10 @@
           config.android_sdk.accept_license = true;
           config.allowUnfree = true;
         };
+        lib = nixpkgs.lib;
       in {
-        flutter = import ./flutter/shell.nix {inherit pkgs;};
-        python-prisma = import ./python-prisma/shell.nix {inherit pkgs;};
+        flutter = import ./flutter/shell.nix {inherit pkgs lib;};
+        python-prisma = import ./python-prisma/shell.nix {inherit pkgs lib;};
       }
     );
   };
