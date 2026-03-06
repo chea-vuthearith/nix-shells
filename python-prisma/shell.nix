@@ -1,5 +1,7 @@
-{ pkgs }:
-let
+{
+  pkgs,
+  lib,
+}: let
   version = "5.17.0";
   engineHash = "393aa359c9ad4a4bb28630fb5613f9c281cde053";
 
@@ -9,7 +11,9 @@ let
       "aarch64-linux" = "linux-arm64-openssl-3.0.x";
       "x86_64-darwin" = "darwin";
       "aarch64-darwin" = "darwin-arm64";
-    }.${pkgs.stdenv.system}
+    }.${
+      pkgs.stdenv.system
+    }
     or (throw "Unsupported system: ${pkgs.stdenv.system}");
 
   query-engine-file = pkgs.fetchurl {
