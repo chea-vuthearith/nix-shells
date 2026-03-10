@@ -13,7 +13,7 @@
     "hw.gpu.mode" = "host";
   };
   androidComposition = pkgs.androidenv.composeAndroidPackages {
-    platformVersions = [version];
+    platformVersions = [version "35"];
     abiVersions = [abi];
     systemImageTypes = [imageType];
     includeSystemImages = true;
