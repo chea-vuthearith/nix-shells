@@ -68,4 +68,8 @@ in
     PRISMA_SCHEMA_ENGINE_BINARY = "${prisma-engines-5}/bin/schema-engine";
     PRISMA_QUERY_ENGINE_LIBRARY = "${prisma-engines-5}/lib/libquery_engine.node";
     PRISMA_FMT_BINARY = "${prisma-engines-5}/bin/prisma-fmt";
+
+    shellHook = ''
+      export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+    '';
   }
